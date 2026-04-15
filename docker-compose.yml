@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: presantis-db
+    environment:
+      POSTGRES_USER: presantis
+      POSTGRES_PASSWORD: presantis
+      POSTGRES_DB: presantis
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U presantis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend can be run via Quarkus Dev Mode locally, but here is the definition
+  # for production or containerized run
+  backend:
+    image: presantis/backend:latest
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: presantis-backend
+    ports:
+      - "8080:8080"
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/presantis
+      QUARKUS_DATASOURCE_USERNAME: presantis
+      QUARKUS_DATASOURCE_PASSWORD: presantis
+      QUARKUS_FLYWAY_MIGRATE_AT_START: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
