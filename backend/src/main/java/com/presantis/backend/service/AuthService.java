@@ -25,8 +25,8 @@ public class AuthService {
 
     public String generateToken(Usuario usuario) {
         return Jwt.issuer("https://presantis.com/")
-                .upn(usuario.email)
-                .subject(usuario.id.toString())
+                .upn(usuario.id.toString())
+                .subject(usuario.email)
                 .groups(new HashSet<>(Arrays.asList(usuario.rol.name())))
                 .claim("empresaId", usuario.empresa.id.toString())
                 .expiresIn(Duration.ofHours(24))

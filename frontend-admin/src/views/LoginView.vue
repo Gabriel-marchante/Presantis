@@ -13,14 +13,7 @@ const password = ref('');
 const handleLogin = async () => {
   const success = await authStore.login(email.value, password.value);
   if (success) {
-    if (authStore.isAdmin) {
-      router.push('/');
-    } else {
-      // Si el empleado entra al panel de admin, en un mundo ideal iría a otro portal
-      // pero provisionalmente lo echamos
-      authStore.error = "Acceso denegado. Se requieren permisos de administrador.";
-      authStore.logout();
-    }
+    router.push('/');
   }
 };
 </script>
@@ -29,11 +22,8 @@ const handleLogin = async () => {
   <div class="login-container">
     <div class="login-box glass-panel">
       <div class="login-header">
-        <div class="logo">
-          <Clock size="32" color="white" />
-        </div>
-        <h1>Presantis Admin</h1>
-        <p>Panel de Control Horario</p>
+        <img src="../assets/logo_Presantix.png" alt="Presantis Logo" class="brand-logo-large" />
+        <p class="subtitle">Área de Control y Presencia</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="login-form">

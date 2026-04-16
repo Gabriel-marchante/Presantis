@@ -14,7 +14,7 @@ public class Vacacion extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     public Usuario usuario;
 

@@ -1,22 +1,35 @@
 <script setup>
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { LayoutDashboard, FileText, CalendarDays, Activity } from 'lucide-vue-next';
+import { LayoutDashboard, FileText, CalendarDays, Activity, Users, Settings, Calendar } from 'lucide-vue-next';
+import { useAuthStore } from '../store/auth';
 
 const route = useRoute();
+const authStore = useAuthStore();
 
-const links = [
+const allLinks = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Calendario', path: '/calendario', icon: Calendar },
+  { name: 'Usuarios', path: '/usuarios', icon: Users, requiresAdmin: true },
   { name: 'Solicitudes', path: '/solicitudes', icon: FileText },
-  { name: 'Festivos', path: '/festivos', icon: CalendarDays },
-  { name: 'Logs', path: '/logs', icon: Activity }
+  { name: 'Festivos', path: '/festivos', icon: CalendarDays, requiresAdmin: true },
+  { name: 'Logs', path: '/logs', icon: Activity, requiresAdmin: true },
+  { name: 'Ajustes', path: '/ajustes', icon: Settings }
 ];
+
+const visibleLinks = computed(() => {
+  return allLinks.filter(link => !link.requiresAdmin || authStore.isAdmin);
+});
 </script>
 
 <template>
   <aside class="sidebar glass-panel">
+    <div class="sidebar-header">
+      <img src="../assets/logo_Presantix.png" alt="Presantis Logo" class="brand-logo-sidebar" />
+    </div>
     <nav class="nav-menu">
       <router-link 
-        v-for="link in links" 
+        v-for="link in visibleLinks" 
         :key="link.path" 
         :to="link.path"
         class="nav-item"
@@ -41,6 +54,14 @@ const links = [
   flex-direction: column;
   padding: 2rem 1rem;
   z-index: 5;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-menu {

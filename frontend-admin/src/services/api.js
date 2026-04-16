@@ -20,7 +20,7 @@ api.interceptors.request.use(config => {
 
 // Intercept responses to handle global errors (like 401 Unauthorized)
 api.interceptors.response.use(response => response, error => {
-  if (error.response && error.response.status === 401) {
+  if (error.response && error.response.status === 401 && !error.config.url.includes('/auth/login')) {
     // We are unauthorized, clear state and kick to login
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('user_info');

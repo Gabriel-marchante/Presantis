@@ -1,10 +1,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Search, Plus } from 'lucide-vue-next';
 import api from '../services/api';
 import StatusBadge from '../components/StatusBadge.vue';
+import ModalSolicitar from '../components/ModalSolicitar.vue';
 
 const solicitudes = ref([]);
 const loading = ref(true);
+const isModalOpen = ref(false);
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 const fetchSolicitudes = async () => {
   try {
@@ -45,9 +56,19 @@ onMounted(() => {
 
 <template>
   <div class="page-content">
-    <div class="page-header">
-      <h2>Gestión de Solicitudes</h2>
-      <p class="text-subtitle">Revisa y aprueba las peticiones de corrección de jornadas</p>
+    <ModalSolicitar :isOpen="isModalOpen" @close="closeModal" />
+    
+    <div class="page-header header-with-actions">
+      <div>
+        <h2>Gestión de Solicitudes</h2>
+        <p class="text-subtitle">Revisa y aprueba las peticiones o envía nuevas peticiones.</p>
+      </div>
+      <div>
+        <button class="btn btn-primary" @click="openModal">
+          <Plus size="18" />
+          Nueva Solicitud
+        </button>
+      </div>
     </div>
 
     <div class="table-card glass-panel">
@@ -102,6 +123,12 @@ onMounted(() => {
 <style scoped>
 .page-header {
   margin-bottom: 2rem;
+}
+
+.header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .text-subtitle {

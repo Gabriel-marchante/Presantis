@@ -1,5 +1,6 @@
 package com.presantis.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class Jornada extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     public Usuario usuario;
 
@@ -37,6 +38,7 @@ public class Jornada extends PanacheEntityBase {
     @Column(nullable = false, length = 30)
     public EstadoJornada estado;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "jornada", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Pausa> pausas = new ArrayList<>();
 }

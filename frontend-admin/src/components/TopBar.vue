@@ -2,6 +2,7 @@
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import { LogOut, User } from 'lucide-vue-next';
+import logoUrl from '../assets/logo_Presantix.png';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -15,7 +16,7 @@ const handleLogout = () => {
 <template>
   <header class="topbar glass-panel">
     <div class="brand">
-      <span class="logo">P.</span>
+      <img :src="logoUrl" class="logo" alt="Presantis Logo" />
       <h2>Presantis</h2>
     </div>
     
@@ -58,17 +59,9 @@ const handleLogout = () => {
 }
 
 .logo {
-  background: linear-gradient(135deg, var(--primary), #8b5cf6);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-  box-shadow: var(--shadow-glow);
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
 
 h2 {

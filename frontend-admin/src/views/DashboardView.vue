@@ -1,28 +1,43 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Users, Clock, CalendarDays, AlertTriangle, FileText } from 'lucide-vue-next';
 import api from '../services/api';
 import StatCard from '../components/StatCard.vue';
 import StatusBadge from '../components/StatusBadge.vue';
-import { Users, UserX, Clock, Building } from 'lucide-vue-next';
+import FichajeWidget from '../components/FichajeWidget.vue';
+import HistorialJornadasWidget from '../components/HistorialJornadasWidget.vue';
+import { useAuthStore } from '../store/auth';
 
-const kpis = ref({
-  totalEmpleados: 12,
-  trabajandoAhora: 0,
-  ausentes: 0,
-  horasSemanales: 340
+const authStore = useAuthStore();
+const loading = ref(true);
+
+const adminStats = ref({
+  empleadosActivos: 0,
+  totalHorasHoy: 0,
+  solicitudesPendientes: 0,
+  incidencias: 0
+});
+
+const empStats = ref({
+  horasSemanales: 0,
+  diasTrabajados: 0,
+  solicitudesPropias: 0,
+  incidenciasPropias: 0
 });
 
 const presencias = ref([]);
-const loading = ref(true);
 
 const fetchDashboardData = async () => {
   try {
-    const res = await api.get('/admin/presencia');
-    presencias.value = res.data;
-    
-    // Calcular KPIs (simplificado)
-    kpis.value.trabajandoAhora = res.data.length;
-    kpis.value.ausentes = kpis.value.totalEmpleados - kpis.value.trabajandoAhora;
+    if (authStore.isAdmin) {
+      const resPresencia = await api.get('/admin/presencia');
+      presencias.value = resPresencia.data || [];
+      const resStats = await api.get('/admin/dashboard-stats');
+      adminStats.value = resStats.data;
+    } else {
+      const resStats = await api.get('/jornadas/stats/me');
+      empStats.value = resStats.data;
+    }
   } catch (error) {
     console.error("Error cargando dashboard:", error);
   } finally {
@@ -43,89 +58,96 @@ onMounted(() => {
 
 <template>
   <div class="page-content">
-    <div class="page-header">
-      <h2>Dashboard de Presencia</h2>
+    <header class="page-header">
+      <div>
+        <h2>Dashboard de Presantis</h2>
+        <p class="subtitle">Resumen de actividad en tiempo real</p>
+      </div>
       <button @click="fetchDashboardData" class="btn btn-outline" :class="{ 'spinning': loading }">
         ↻ Actualizar
       </button>
-    </div>
+    </header>
 
-    <!-- KPI Row -->
-    <div class="kpi-grid">
-      <StatCard 
-        title="Trabajando Ahora" 
-        :value="kpis.trabajandoAhora" 
-        :icon="Users"
-        trend="+2"
-        :trendPositive="true"
-      />
-      <StatCard 
-        title="Ausentes" 
-        :value="kpis.ausentes" 
-        :icon="UserX"
-        trend="-1"
-        :trendPositive="true"
-      />
-      <StatCard 
-        title="Horas Semanales" 
-        :value="kpis.horasSemanales" 
-        :icon="Clock"
-        trend="+14h"
-        :trendPositive="true"
-      />
-      <StatCard 
-        title="Departamentos" 
-        value="4" 
-        :icon="Building"
-      />
-    </div>
-
-    <!-- Active Employees Table -->
-    <div class="table-card glass-panel mt-8">
-      <div class="card-header">
-        <h3>Empleados en activo (Tiempo real)</h3>
+    <!-- ADMIN LAYOUT -->
+    <template v-if="authStore.isAdmin">
+      <div class="dashboard-horizontal-section mb-2">
+        <div class="fichaje-container-side">
+          <FichajeWidget />
+        </div>
+        
+        <div class="stats-grid-side">
+          <StatCard title="Empleados Activos" :value="adminStats.empleadosActivos" :icon="Users" trend="up" color="primary" />
+          <StatCard title="Horas Totales Hoy" :value="adminStats.totalHorasHoy + 'h'" :icon="Clock" color="success" />
+          <StatCard title="Solicitudes" :value="adminStats.solicitudesPendientes" :icon="CalendarDays" trend="down" color="warning" />
+          <StatCard title="Incidencias" :value="adminStats.incidencias" :icon="AlertTriangle" color="danger" />
+        </div>
       </div>
-      
-      <div v-if="loading" class="loading-state">Cargando datos...</div>
-      
-      <div v-else class="table-container">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Empleado</th>
-              <th>Hora Inicio</th>
-              <th>Ubicación</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="presencias.length === 0">
-              <td colspan="4" class="empty-state">No hay empleados trabajando activamente en este momento.</td>
-            </tr>
-            <tr v-for="j in presencias" :key="j.id">
-              <td>
-                <div class="employee-cell">
-                  <div class="avatar-sm">{{ j.usuario.nombre.charAt(0) }}</div>
-                  <div>
-                    <span class="d-block font-medium">{{ j.usuario.nombre }} {{ j.usuario.apellidos }}</span>
-                    <span class="d-block text-s text-muted">{{ j.usuario.email }}</span>
+
+      <!-- Active Employees Table -->
+      <div class="table-card glass-panel mt-8">
+        <div class="card-header">
+          <h3>Empleados en activo (Tiempo real)</h3>
+        </div>
+        
+        <div v-if="loading" class="loading-state">Cargando datos...</div>
+        
+        <div v-else class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Hora Inicio</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="presencias.length === 0">
+                <td colspan="4" class="empty-state">No hay empleados trabajando activamente en este momento.</td>
+              </tr>
+              <tr v-for="j in presencias" :key="j.id">
+                <td>
+                  <div class="employee-cell">
+                    <div class="avatar-sm">{{ j.usuario?.nombre?.charAt(0) || 'U' }}</div>
+                    <div>
+                      <span class="d-block font-medium">{{ j.usuario?.nombre || 'Usuario' }} {{ j.usuario?.apellidos || 'Desconocido' }}</span>
+                      <span class="d-block text-s text-muted">{{ j.usuario?.email }}</span>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>{{ formatDate(j.fechaInicio) }}</td>
-              <td>
-                <span class="location-chip">
-                  {{ j.ubicacionInicio }}
-                </span>
-              </td>
-              <td>
-                <StatusBadge :status="j.estado" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </td>
+                <td>{{ formatDate(j.fechaInicio) }}</td>
+                <td>
+                  <span class="location-chip">{{ j.ubicacionInicio }}</span>
+                </td>
+                <td>
+                  <StatusBadge :status="j.estado" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </template>
+
+    <!-- EMPLOYEE LAYOUT -->
+    <template v-else>
+      <div class="dashboard-horizontal-section mb-2">
+        <div class="fichaje-container-side">
+          <FichajeWidget />
+        </div>
+
+        <div class="stats-grid-side">
+          <StatCard title="Horas Semanales" :value="empStats.horasSemanales + 'h'" :icon="Clock" color="success" />
+          <StatCard title="Días Trabajados" :value="empStats.diasTrabajados" :icon="CalendarDays" color="primary" />
+          <StatCard title="Mis Solicitudes" :value="empStats.solicitudesPropias" :icon="FileText" color="warning" />
+          <StatCard title="Incidencias" :value="empStats.incidenciasPropias" :icon="AlertTriangle" color="danger" />
+        </div>
+      </div>
+
+      <div class="history-container mt-4">
+        <HistorialJornadasWidget />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -137,10 +159,29 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+/* Horizontal Layout Fix for Dashboard */
+.dashboard-horizontal-section {
+  display: flex;
   gap: 1.5rem;
+  align-items: stretch;
+}
+
+.fichaje-container-side {
+  flex: 0 0 320px;
+}
+
+.stats-grid-side {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 2rem;
+}
+.mt-4 {
+  margin-top: 1rem;
 }
 
 .mt-8 {
@@ -207,5 +248,15 @@ onMounted(() => {
 .spinning {
   opacity: 0.5;
   pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-horizontal-section {
+    flex-direction: column;
+  }
+  .fichaje-container-side {
+    flex: auto;
+    width: 100%;
+  }
 }
 </style>

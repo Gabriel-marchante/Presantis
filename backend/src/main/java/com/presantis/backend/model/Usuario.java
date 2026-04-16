@@ -21,6 +21,7 @@ public class Usuario extends PanacheEntityBase {
     @Column(nullable = false, length = 100, unique = true)
     public String email;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @Column(name = "password_hash", nullable = false)
     public String passwordHash;
 
@@ -28,6 +29,7 @@ public class Usuario extends PanacheEntityBase {
     @Column(nullable = false, length = 20)
     public Role rol;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = false)
     public Empresa empresa;

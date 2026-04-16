@@ -100,12 +100,12 @@ CREATE TABLE notificaciones (
 );
 
 -- INSERCIÓN DE DATOS INICIALES (SEED)
--- Password para los usuarios: "admin123" -> Hash bcrypt: $2a$10$wEtwMvW..Yw69L6vJ6.oH.QZ1TIF5mI7l2Dq1n.U35L09q43Y9HRC
+-- Password para los usuarios: "admin123" -> Hash bcrypt: $2a$10$NP.jEAvx5lzWbr6Uzc3TQeUhC04L7w3BSv7tXA2FAZ29UoWg1.fzm
 
 INSERT INTO empresas (id, nombre, cif) 
 VALUES ('11111111-1111-1111-1111-111111111111', 'Empresa Demo S.A.', 'A12345678');
 
 INSERT INTO usuarios (id, nombre, apellidos, email, password_hash, rol, empresa_id, activo)
 VALUES 
-('22222222-2222-2222-2222-222222222222', 'Admin', 'Principal', 'admin@presantis.com', '$2a$10$wEtwMvW..Yw69L6vJ6.oH.QZ1TIF5mI7l2Dq1n.U35L09q43Y9HRC', 'ADMIN', '11111111-1111-1111-1111-111111111111', TRUE),
-('33333333-3333-3333-3333-333333333333', 'Empleado', 'Uno', 'empleado1@presantis.com', '$2a$10$wEtwMvW..Yw69L6vJ6.oH.QZ1TIF5mI7l2Dq1n.U35L09q43Y9HRC', 'EMPLOYEE', '11111111-1111-1111-1111-111111111111', TRUE);
+('22222222-2222-2222-2222-222222222222', 'Admin', 'Principal', 'admin@presantis.com', '$2a$10$NP.jEAvx5lzWbr6Uzc3TQeUhC04L7w3BSv7tXA2FAZ29UoWg1.fzm', 'ADMIN', '11111111-1111-1111-1111-111111111111', TRUE),
+('33333333-3333-3333-3333-333333333333', 'Empleado', 'Uno', 'empleado1@presantis.com', '$2a$10$NP.jEAvx5lzWbr6Uzc3TQeUhC04L7w3BSv7tXA2FAZ29UoWg1.fzm', 'EMPLOYEE', '11111111-1111-1111-1111-111111111111', TRUE);

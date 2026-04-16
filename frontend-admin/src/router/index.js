@@ -11,7 +11,7 @@ const routes = [
   {
     path: '/',
     component: () => import('../components/BaseLayout.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true },
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -24,14 +24,32 @@ const routes = [
         component: () => import('../views/SolicitudesView.vue')
       },
       {
+        path: 'usuarios',
+        name: 'Usuarios',
+        component: () => import('../views/UsuariosView.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'calendario',
+        name: 'Calendario',
+        component: () => import('../views/CalendarioView.vue')
+      },
+      {
         path: 'festivos',
         name: 'Festivos',
-        component: () => import('../views/FestivosView.vue')
+        component: () => import('../views/FestivosView.vue'),
+        meta: { requiresAdmin: true }
       },
       {
         path: 'logs',
         name: 'Logs',
-        component: () => import('../views/LogsView.vue')
+        component: () => import('../views/LogsView.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'ajustes',
+        name: 'Ajustes',
+        component: () => import('../views/AjustesView.vue')
       }
     ]
   }
@@ -52,8 +70,7 @@ router.beforeEach((to, from, next) => {
     next('/');
   } else if (to.meta.requiresAdmin && !authStore.isAdmin && authStore.isAuthenticated) {
     // If not admin, shouldn't be here (in a real app, maybe kick to employee view or 403)
-    authStore.logout();
-    next('/login');
+    next('/');
   } else {
     next();
   }
