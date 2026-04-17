@@ -172,6 +172,9 @@ Presantis está diseñado para cumplir con:
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Gabriel-marchante)
 
 ---
+## ✍️ Créditos
+Desarrollado por **Macloud Team (Gabriel Marchante)**. Inspirado en herramientas de seguridad clásicas y estética retro-futurista.
+---
 
 <div align="center">
   <i>Tu tiempo, bien registrado. ⏱️</i>
