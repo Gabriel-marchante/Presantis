@@ -174,7 +174,7 @@ Presantis está diseñado para cumplir con:
 ---
 ## ✍️ Créditos
 
-Desarrollado por **Macloud Team (Gabriel Marchante)**. Inspirado en herramientas de seguridad clásicas y estética retro-futurista.
+Desarrollado por **Macloud Team (Gabriel Marchante)**. 
 
 ---
 
