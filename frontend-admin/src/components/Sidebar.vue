@@ -24,8 +24,10 @@ const visibleLinks = computed(() => {
 
 <template>
   <aside class="sidebar glass-panel">
-    <div class="sidebar-header">
-      <img src="../assets/logo_Presantix.png" alt="Presantis Logo" class="brand-logo-sidebar" />
+    <div class="sidebar-header" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <img src="/logoArgos.png" alt="Argos Logo" style="width: 40px; height: 40px; object-fit: contain;" />
+      <img src="/logo_Presantix.png" alt="Presantis Logo" style="width: 40px; height: 40px; object-fit: contain;" />
+      <img src="/logo_sentinel.png" alt="Sentinel Logo" style="width: 40px; height: 40px; object-fit: contain;" />
     </div>
     <nav class="nav-menu">
       <router-link 
